@@ -91,7 +91,7 @@ class CFG:
 
 
     # GradualWarmupSchedulerV2
-    scheduler_params = {'lr_start': 7.5e-6, 'min_lr': 1e-6, 'lr_max': 3.125e-6*batch_size*num_gpu if multi_gpu else 3.125e-6*batch_size }
+    scheduler_params = {'lr_start': 7.5e-6, 'min_lr': 1e-6, 'lr_max': 1.5625e-5*batch_size*num_gpu if multi_gpu else 1.5625e-5*batch_size }
     multiplier = scheduler_params['lr_max'] / scheduler_params['lr_start']
     warmup_epochs = 3
     cosine_epochs = epochs - warmup_epochs
@@ -106,10 +106,10 @@ class CFG:
     #eps=1e-6 # ReduceLROnPlateau
     # T_max=6 # CosineAnnealingLR
     #T_0=6 # CosineAnnealingWarmRestarts
-    optimizer = "Ranger"  # Adam, SGD, AdamW, Ranger,
+    optimizer = "AdamW"  # Adam, SGD, AdamW, Ranger,
     use_sam = False
     optimizer_params = {'lr': scheduler_params['lr_max'],
-                        'weight_decay':1e-6,
+                        'weight_decay':1e-2,
                         # 'momentum': 0.9,  # SGD
                         }
     # lr=1e-4
@@ -121,11 +121,11 @@ class CFG:
         'VerticalFlip': {'p': 0.5},
         'HorizontalFlip': {'p': 0.5},
 
-        'ShiftScaleRotate': {'p': 0.5},
-        'HueSaturationValue': {'hue_shift_limit': 0.2, 'sat_shift_limit': 0.2, 'val_shift_limit': 0.2, 'p': 0.5},
-        'RandomBrightnessContrast': {'brightness_limit': (-0.1, 0.1), 'contrast_limit': (-0.1, 0.1), 'p': 0.5},
-        'ToGray': {'p': 0.2},
-        'ToSepia': {'p': 0.2},
+        # 'ShiftScaleRotate': {'p': 0.5},
+        # 'HueSaturationValue': {'hue_shift_limit': 0.2, 'sat_shift_limit': 0.2, 'val_shift_limit': 0.2, 'p': 0.5},
+        # 'RandomBrightnessContrast': {'brightness_limit': (-0.1, 0.1), 'contrast_limit': (-0.1, 0.1), 'p': 0.5},
+        # 'ToGray': {'p': 0.2},
+        # 'ToSepia': {'p': 0.2},
     }
     use_course_dropout = True
     use_cutout = True
@@ -181,14 +181,14 @@ class CFG:
     target_col = 'target'
 
     # self supervised
-    self_supervised = True
+    self_supervised = False
     self_supervised_method = 'SimSiam'
     pred_hidden_dim = 512
     out_dim = 512
     num_mlp_layers = 2
 
-    n_fold=4
-    trn_fold=[0, 1, 2, 3]
+    n_fold=5
+    trn_fold=[0]
     train=True
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

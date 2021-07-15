@@ -123,7 +123,7 @@ class CFG:
 
         'ShiftScaleRotate': {'p': 0.5},
         'HueSaturationValue': {'hue_shift_limit': 0.2, 'sat_shift_limit': 0.2, 'val_shift_limit': 0.2, 'p': 0.5},
-        'RandomBrightnessContrast': {'brightness_limit': (-0.1, 0.1), 'contrast_limit': (-0.1, 0.1), 'p': 0.5},
+        # 'RandomBrightnessContrast': {'brightness_limit': (-0.1, 0.1), 'contrast_limit': (-0.1, 0.1), 'p': 0.5},
         'ToGray': {'p': 0.2},
         'ToSepia': {'p': 0.2},
     }
@@ -162,7 +162,7 @@ class CFG:
         target_type = np.int32
 
     # pretraining by materials.csv or techniques.csv
-    pretraining = True
+    pretraining = False
     pretrain_type = 'both'  # materials or techniques or both
     if pretrain_type == 'materials':
         pretrain_target = ['cardboard', 'chalk', 'deck paint', 'gouache (paint)', 'graphite (mineral)', 'ink', 'oil paint (paint)', 'paint (coating)', 'paper', 'parchment (animal material)', 'pencil', 'prepared paper', 'tracing paper', 'watercolor (paint)']
@@ -181,7 +181,7 @@ class CFG:
     target_col = 'target'
 
     # self supervised
-    self_supervised = True
+    self_supervised = False
     self_supervised_method = 'SimSiam'
     pred_hidden_dim = 512
     out_dim = 512
@@ -1211,8 +1211,8 @@ def train_loop(folds, fold, backbone=None, phase='train'):
         elif CFG.scheduler == 'GradualWarmupSchedulerV2':
             scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CFG.cosine_epochs - CFG.warmup_epochs, eta_min=CFG.min_lr, last_epoch=-1)
             scheduler = GradualWarmupSchedulerV2(optimizer, multiplier=CFG.multiplier, total_epoch=CFG.warmup_epochs, after_scheduler=scheduler_cosine)
-        elif CFG.scheduler == 'OneCycleLB':
-            scheduler = OneCycleLR(optimizer, max_lr=CFG.scheduler_params['lr_max'], pct_start=CFG.pct_start, div_factor=CFG.div_factor, epochs=CFG.epochs, steps_per_epochs=math.ceil(len(train_loader)/CFG.gradient_accumulation_steps))
+        elif CFG.scheduler == 'OneCycleLR':
+            scheduler = OneCycleLR(optimizer, max_lr=CFG.scheduler_params['lr_max'], pct_start=CFG.pct_start, div_factor=CFG.div_factor, epochs=CFG.epochs, steps_per_epoch=math.ceil(len(train_loader)/CFG.gradient_accumulation_steps))
         else:
             LOGGER.info(f'Scheduler {CFG.scheduler} is not implementated')
         return scheduler

@@ -91,7 +91,7 @@ class CFG:
 
 
     # GradualWarmupSchedulerV2
-    scheduler_params = {'lr_start': 7.5e-6, 'min_lr': 1e-6, 'lr_max': 3.125e-6*batch_size*num_gpu if multi_gpu else 3.125e-6*batch_size }
+    scheduler_params = {'lr_start': 7.5e-6, 'min_lr': 1e-6, 'lr_max': 5e-4 * batch_size/ 32  if multi_gpu else 5e-4 * batch_size/ 32 }
     multiplier = scheduler_params['lr_max'] / scheduler_params['lr_start']
     warmup_epochs = 3
     cosine_epochs = epochs - warmup_epochs
@@ -109,7 +109,7 @@ class CFG:
     optimizer = "Ranger"  # Adam, SGD, AdamW, Ranger,
     use_sam = False
     optimizer_params = {'lr': scheduler_params['lr_max'],
-                        'weight_decay':1e-6,
+                        'weight_decay':1e-5,
                         # 'momentum': 0.9,  # SGD
                         }
     # lr=1e-4
@@ -123,12 +123,12 @@ class CFG:
 
         'ShiftScaleRotate': {'p': 0.5},
         'HueSaturationValue': {'hue_shift_limit': 0.2, 'sat_shift_limit': 0.2, 'val_shift_limit': 0.2, 'p': 0.5},
-        'RandomBrightnessContrast': {'brightness_limit': (-0.1, 0.1), 'contrast_limit': (-0.1, 0.1), 'p': 0.5},
+        # 'RandomBrightnessContrast': {'brightness_limit': (-0.1, 0.1), 'contrast_limit': (-0.1, 0.1), 'p': 0.5},
         'ToGray': {'p': 0.2},
-        'ToSepia': {'p': 0.2},
+        # 'ToSepia': {'p': 0.2},
     }
-    use_course_dropout = True
-    use_cutout = True
+    use_course_dropout = False
+    use_cutout = False
 
     use_mixup = False
     alpha = 1.0
@@ -146,7 +146,7 @@ class CFG:
     #     target_size = 1
     
     # training target
-    training_type = 'A'  # A, B, C
+    training_type = 'C'  # A, B, C
 
     if training_type == 'A':
         criterion = 'MSELoss'
@@ -159,7 +159,7 @@ class CFG:
     elif training_type == 'C':
         criterion = 'CrossEntropyLoss'
         train_target = 'target'
-        target_type = np.int32
+        target_type = np.int64
 
     # pretraining by materials.csv or techniques.csv
     pretraining = False
@@ -181,14 +181,14 @@ class CFG:
     target_col = 'target'
 
     # self supervised
-    self_supervised = True
+    self_supervised = False
     self_supervised_method = 'SimSiam'
     pred_hidden_dim = 512
     out_dim = 512
     num_mlp_layers = 2
 
-    n_fold=4
-    trn_fold=[0, 1, 2, 3]
+    n_fold=5
+    trn_fold=[0]
     train=True
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -1122,7 +1122,7 @@ def train_loop(folds, fold, backbone=None, phase='train'):
 
     train_folds = folds.loc[trn_idx].reset_index(drop=True)
     valid_folds = folds.loc[val_idx].reset_index(drop=True)
-    valid_labels = valid_folds[CFG.target_col].values
+    valid_labels = valid_folds[CFG.target_col].values 
 
     if phase == 'train':
         target = CFG.train_target
@@ -1137,13 +1137,16 @@ def train_loop(folds, fold, backbone=None, phase='train'):
         target_type = CFG.pretrain_target_type
         target_size = len(target)
 
-    train_target = train_folds[target].values
-    valid_target = valid_folds[target].values
+    train_target = train_folds[target].values 
+    valid_target = valid_folds[target].values 
 
 
     if (CFG.training_type == 'B') and (phase == 'train'):
         train_target = (train_target - 1550) / 100
         valid_target = (valid_target - 1550) / 100
+    elif (CFG.training_type == 'A') and (phase == 'train'):
+        train_target = train_target - 1.5
+        valid_target = valid_target - 1.5
 
 
     # target_type = np.int32 if CFG.criterion == 'CrossEntropyLoss' else np.float32
@@ -1269,7 +1272,11 @@ def train_loop(folds, fold, backbone=None, phase='train'):
         # scoring
         if phase == 'train':
             if CFG.training_type == 'C':
+                preds = F.softmax(torch.tensor(preds), dim=1).numpy()
                 score = get_score(valid_labels, np.argmax(preds, axis=1))
+            elif CFG.training_type == 'A':
+                preds = preds + 1.5
+                score = get_score(valid_labels, preds)
             else:
                 score = get_score(valid_labels, preds)
         else:
@@ -1298,9 +1305,11 @@ def train_loop(folds, fold, backbone=None, phase='train'):
 
     if phase == 'train':
         if CFG.training_type == 'C':
-            valid_folds['preds'] = np.argmax(torch.load(OUTPUT_DIR+f'{CFG.model_name}_fold{fold}_{phase}_best_loss.pth', 
-                                            map_location=torch.device('cpu'))['preds'],
-                                            axis=1)
+            valid_preds = torch.load(OUTPUT_DIR+f'{CFG.model_name}_fold{fold}_{phase}_best_loss.pth', 
+                                            map_location=torch.device('cpu'))['preds']
+            valid_folds['preds'] = np.argmax( valid_preds, axis=1)
+            for i in range(3):
+                valid_folds[f'preds_{i}'] = valid_preds[:, i]
         else:
             valid_folds['preds'] = torch.load(OUTPUT_DIR+f'{CFG.model_name}_fold{fold}_{phase}_best_loss.pth', 
                                             map_location=torch.device('cpu'))['preds']
@@ -1556,9 +1565,13 @@ def main():
 
         # submission
         if CFG.training_type == 'C':
+            predictions = F.softmax(torch.tensor(predictions), dim=1).numpy()
             for i in range(4):
                 test_df[f'{i}'] = predictions[:, i]
             predictions = np.argmax(predictions, axis=1)
+            test_df.to_csv(OUTPUT_DIR + 'test_probs.csv', index=False)
+        elif CFG.training_type == 'A':
+            predictions = predictions + 1.5
         test_df['target'] = predictions
         test_df[['target']].to_csv(OUTPUT_DIR+'submission.csv', index=False)
 
