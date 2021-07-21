@@ -79,14 +79,14 @@ if not os.path.exists(OUTPUT_DIR):
 EXP_DIR = '../exp/'
 
 class CFG:
-    algo = 'lightgbm'
+    algo = 'lightgbm'  # lightgbm, Ridge, Lasso, ElasticNet
 
     params = {
         'objective': 'regression',
         'metric': 'rmse',
         # 'num_class': 4,
-        'num_iterations': 10000,
-        'learning_rate': 0.001,
+        'num_iterations': 100,
+        'learning_rate': 0.1,
         'num_leaves': 16,
         'seed': 42,
         'max_depth': 75,
