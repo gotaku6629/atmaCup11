@@ -59,6 +59,7 @@ warnings.filterwarnings('ignore')
 
 NUM_EXP = os.path.basename(__file__)[:-3]    # expXXX(ファイル名)を取得
 
+
 INPUT_DIR = '../input/dataset_atmaCup11/'
 OUTPUT_DIR =  f'../exp/{NUM_EXP}/'
 
