@@ -6,3 +6,5 @@
 *.pth*
 *.jpg
 .vscode/settings.json
+*esvit/*
+*.pickle
