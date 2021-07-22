@@ -39,26 +39,25 @@ import torch.distributed as dist
 import torch.multiprocessing as mp
 
 
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
-from albumentations import ImageOnlyTransform
+#import albumentations as A
+#from albumentations.pytorch import ToTensorV2
+#from albumentations import ImageOnlyTransform
 
-import timm
+#import timm
 
-from torch.cuda.amp import autocast, GradScaler
+#from torch.cuda.amp import autocast, GradScaler
 
-import lightly
+#import lightly
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import lightgbm as lgb
+#import lightgbm as lgb
 
 import warnings 
 warnings.filterwarnings('ignore')
 
 NUM_EXP = os.path.basename(__file__)[:-3]    # expXXX(ファイル名)を取得
-
 
 INPUT_DIR = '../input/dataset_atmaCup11/'
 OUTPUT_DIR =  f'../exp/{NUM_EXP}/'
@@ -106,9 +105,10 @@ class CFG:
         'random_state': 42,
         }
 
-    exps = ['exp047', 'exp058', 'exp065']
+    exps = ['exp047', 'exp058', 'exp065', 'exp070']
 
     target_col = 'target'
+    #target_col = 'sorting_date'
 
     pretrain_target = ['cardboard', 'chalk', 'deck paint', 'gouache (paint)', 'graphite (mineral)', 'ink', 'oil paint (paint)', 'paint (coating)', 'paper', 'parchment (animal material)', 'pencil', 'prepared paper', 'tracing paper', 'watercolor (paint)']
     pretrain_target +=  ['brush', 'counterproof', 'pen']
@@ -133,10 +133,15 @@ LOGGER = init_logger()
 
 
 def load_result_csv(num_exp):
+    cur_path = os.getcwd()
+    print('path=', cur_path)
+    '''
     if os.path.exists(EXP_DIR + f'{num_exp}/tta/'):
         exp_dir = EXP_DIR + f'{num_exp}/tta/'
     else:
         exp_dir = EXP_DIR + f'{num_exp}/'
+    '''
+    exp_dir = EXP_DIR + f'{num_exp}/'
     ret = {}
     ret['submission'] = pd.read_csv(exp_dir + 'submission.csv')
     ret['oof'] = pd.read_csv(exp_dir + 'oof_df.csv')
