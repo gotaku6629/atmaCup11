@@ -54,7 +54,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-NUM_EXP = 47
+NUM_EXP = 76
 
 INPUT_DIR = '../input/dataset_atmaCup11/'
 EXP_DIR =  f'../exp/exp{NUM_EXP:03}/'
@@ -78,7 +78,7 @@ class CFG:
     print_freq=100
     num_workers=4
     num_gpu = torch.cuda.device_count()
-    model_name = 'resnet18d'
+    model_name = 'swin_tiny_patch4_window7_224'
     size=224
     # scheduler='CosineAnnealingWarmRestarts' # 'ReduceLROnPlateau', 'CosineAnnealingLR', 'CosineAnnealingWarmRestarts', GradualWarmupSchedulerV2
     # epochs=25
@@ -161,7 +161,7 @@ class CFG:
         target_type = np.int64
 
     # pretraining by materials.csv or techniques.csv
-    pretraining = True
+    pretraining = False
     pretrain_type = 'both'  # materials or techniques or both
     if pretrain_type == 'materials':
         pretrain_target = ['cardboard', 'chalk', 'deck paint', 'gouache (paint)', 'graphite (mineral)', 'ink', 'oil paint (paint)', 'paint (coating)', 'paper', 'parchment (animal material)', 'pencil', 'prepared paper', 'tracing paper', 'watercolor (paint)']
@@ -372,7 +372,17 @@ class CustomModel(nn.Module):
 
         self.fc = nn.Sequential(
             nn.Dropout(0.3),
-            nn.Linear(self.n_features, target_size)
+            nn.Linear(self.n_features, target_size),
+            # nn.ReLU(),
+            # nn.BatchNorm1d(512),
+            # nn.Dropout(0.3),
+
+            # nn.Linear(512, 512),
+            # nn.ReLU(),
+            # nn.BatchNorm1d(512),
+            # nn.Dropout(0.3),
+
+            # nn.Linear(512, target_size),
             )
         # self.n_features = self.model.head.fc.in_features
         # self.model.head.fc = nn.Linear(self.n_features, self.cfg.target_size)
@@ -438,9 +448,8 @@ def center_crop(x, pct_crop=0.1):
 
 def tta(model, x, apply_fn=None):
     bs, _, height, width = x.shape
-    cropped = center_crop(x, pct_crop=0.2)
-    cropped2 = center_crop(x, pct_crop=0.1)
-    x = torch.stack([x, x.flip(-1), x.flip(-2), cropped.flip(-2), cropped, cropped.flip(-1), cropped2],0)
+    cropped = center_crop(x, pct_crop=0.4)
+    x = torch.stack([x, cropped.flip(-2)],0)
     n_tta = x.shape[0]
     x = x.view(-1, 3, height, width)
 
