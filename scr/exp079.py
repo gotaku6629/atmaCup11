@@ -194,7 +194,7 @@ class CFG:
     ssl_batch_size = 32
 
     n_fold=5
-    trn_fold=[3, 4]
+    trn_fold=[2]
     train=True
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
