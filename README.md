@@ -13,7 +13,12 @@ atmCup11プログラム共有用
 
 ## Network
 1. 事前学習 (SimSiam & ESViT)
-  ともにmaterials + techniquesのマルチラベルをMSE Lossにより学習
+ - ともにmaterials + techniquesのマルチラベルをMSE Lossにより学習
+ 
+2. アンサンブル学習
+ -　targetの予測（ResNet18d, ResNet34d, Swin_tiny, Swin_small）
+ -  sorting_dateの予測 (Swin_small)
+ 
 <p align="center">
 <img src='imgs/network.png' width="1000px"/>
 
