@@ -1,7 +1,10 @@
 # atmaCup11
 atmCup11プログラム共有用
 
-
+## Result
+<p align="center">
+<img src='imgs/result.png' width="1000px"/>
+  
 CV vs LB
 |exp|CV|LB|notes|
 |:-|:-|:-|:-|
