@@ -1,5 +1,5 @@
 # atmaCup11
-atmCup11プログラム共有用
+[atmCup11](https://www.guruguru.science/competitions/17/) プログラム共有用
 
 テーマ：「美術作品の画像やメタデータからその作品がどの時代に作成されたのかを予測する」
 
@@ -52,3 +52,6 @@ CV vs LB
 | |  |  |  |
 | |  |  |  |
 
+
+## Reference
+・[SimSiam](https://arxiv.org/pdf/2011.10566.pdf) Exploring Simple Siamese Representation Learning 
