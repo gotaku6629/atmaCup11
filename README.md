@@ -6,12 +6,14 @@ atmCup11プログラム共有用
 ## Result
 <p align="center">
 <img src='imgs/result.png' width="1000px"/>
-  
+ 
 
 ## Network
 <p align="center">
 <img src='imgs/network.png' width="1000px"/>
- 
+・CV = 0.6590
+・Public  Score = 0.6674
+・Private Score = 0.6631
 
 CV vs LB
 |exp|CV|LB|notes|
