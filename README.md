@@ -12,6 +12,8 @@ atmCup11プログラム共有用
  
 
 ## Network
+1. 事前学習 (SimSiam & ESViT)
+  ともにmaterials + techniquesのマルチラベルをMSE Lossにより学習
 <p align="center">
 <img src='imgs/network.png' width="1000px"/>
 
