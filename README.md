@@ -4,6 +4,9 @@ atmCup11プログラム共有用
 テーマ：「美術作品の画像やメタデータからその作品がどの時代に作成されたのかを予測する」
 
 ## Result
+・CV = 0.6590
+・Public  Score = 0.6674
+・Private Score = 0.6631
 <p align="center">
 <img src='imgs/result.png' width="1000px"/>
  
@@ -11,9 +14,7 @@ atmCup11プログラム共有用
 ## Network
 <p align="center">
 <img src='imgs/network.png' width="1000px"/>
-・CV = 0.6590
-・Public  Score = 0.6674
-・Private Score = 0.6631
+
 
 CV vs LB
 |exp|CV|LB|notes|
