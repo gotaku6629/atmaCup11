@@ -55,6 +55,8 @@ CV vs LB
 
 ## Reference
 ・[SimSiam](https://arxiv.org/pdf/2011.10566.pdf) 「Exploring Simple Siamese Representation Learning」
+ 
 ・[ESViT](https://arxiv.org/pdf/2106.09785v1.pdf)　「Efficient Self-supervised Vision Transformers for
 Representation Learning」
+ 
 ・[Swin](https://arxiv.org/pdf/2103.14030.pdf)　「Swin Transformer: Hierarchical Vision Transformer using Shifted Windows」
