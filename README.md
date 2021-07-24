@@ -16,7 +16,7 @@ atmCup11プログラム共有用
  - ともにmaterials + techniquesのマルチラベルをMSE Lossにより学習
  
 2. アンサンブル学習
- -　targetの予測（ResNet18d, ResNet34d, Swin_tiny, Swin_small）
+ -  targetの予測（ResNet18d, ResNet34d, Swin_tiny, Swin_small）
  -  sorting_dateの予測 (Swin_small)
  
 <p align="center">
