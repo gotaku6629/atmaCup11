@@ -15,11 +15,13 @@ atmCup11プログラム共有用
   　- num：9856
     - widge, height：75〜225, 75〜225
     - channel：3
+ 
  ・Labels：
     - object_id (str)：作品に一意につけられたID
     - sorting_date (int)：作品の代表年 (西暦) 
     - art_series_id (str)：シリーズ物の作品に対してユニークなID
     - target (choice([0,1,2,3]))：作品の年代カテゴリ, 予測対象
+ 
  ・DataArgumentation：CosineAnnealingWarmRestarts (Ranger)
  
 ## Network
